@@ -1,0 +1,4 @@
+module CSyslog {
+    header "shim.h"
+    export *
+}
