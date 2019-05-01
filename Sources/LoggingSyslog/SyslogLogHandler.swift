@@ -8,9 +8,6 @@ public struct SyslogLogHandler: LogHandler {
     /// Create a `SyslogLogHandler`.
     public init(label: String) {
         self.label = label
-        label.withCString {
-            openlog($0, LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL0)
-        }
     }
 
     public let label: String
@@ -35,7 +32,7 @@ public struct SyslogLogHandler: LogHandler {
             ? self.prettyMetadata
             : self.prettify(self.metadata.merging(metadata!, uniquingKeysWith: { _, new in new }))
 
-        let message = "\(prettyMetadata.map { " \($0)" } ?? "") \(message)"
+        let message = "\(self.label): \(prettyMetadata.map { " \($0)" } ?? "") \(message)"
         message.withCString {
             syslog_helper(level.asSyslogPriority(), $0)
         }
