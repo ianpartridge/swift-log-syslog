@@ -3,7 +3,6 @@ import Logging
 
 /// A `LogHandler` which logs to `syslog(3)`.
 public struct SyslogLogHandler: LogHandler {
-    private let lock = Lock()
 
     /// Create a `SyslogLogHandler`.
     public init(label: String) {
@@ -12,17 +11,7 @@ public struct SyslogLogHandler: LogHandler {
 
     public let label: String
 
-    private var _logLevel: Logger.Level = .info
-    public var logLevel: Logger.Level {
-        get {
-            return self.lock.withLock { self._logLevel }
-        }
-        set {
-            self.lock.withLock {
-                self._logLevel = newValue
-            }
-        }
-    }
+    public var logLevel: Logger.Level = .info
 
     public func log(level: Logger.Level,
                     message: Logger.Message,
@@ -39,28 +28,18 @@ public struct SyslogLogHandler: LogHandler {
     }
 
     private var prettyMetadata: String?
-    private var _metadata = Logger.Metadata() {
+    public var metadata = Logger.Metadata() {
         didSet {
-            self.prettyMetadata = self.prettify(self._metadata)
-        }
-    }
-    public var metadata: Logger.Metadata {
-        get {
-            return self.lock.withLock { self._metadata }
-        }
-        set {
-            self.lock.withLock { self._metadata = newValue }
+            self.prettyMetadata = self.prettify(self.metadata)
         }
     }
 
     public subscript(metadataKey metadataKey: String) -> Logger.Metadata.Value? {
         get {
-            return self.lock.withLock { self._metadata[metadataKey] }
+            return self.metadata[metadataKey]
         }
         set {
-            self.lock.withLock {
-                self._metadata[metadataKey] = newValue
-            }
+            self.metadata[metadataKey] = newValue
         }
     }
 
