@@ -66,6 +66,16 @@ public struct SyslogLogHandler: LogHandler {
     }
     
     /// Create a `SyslogLogHandler`.
+    public init(label: String) {
+        self.label = label
+    }
+
+    /// Create an extended `SyslogLogHandler`.
+    /// - Parameters:
+    ///   - label: Log message label text
+    ///   - ident: Log message indentification text. Prepended before label
+    ///   - facility: Log facility. See syslog(3)
+    ///   - option: Log option.  See syslog(3)®
     public init(label: String, ident: String? = nil, facility: Facility = .user, option: Option = .odelay) {
         self.label = label
         openlog(ident, option.rawValue, facility.rawValue);
